@@ -102,4 +102,5 @@ try {
 } catch (e) {
     console.log("Deployment failed:")
     console.error(e);
+    return 1;
 }
