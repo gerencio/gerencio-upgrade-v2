@@ -2,14 +2,14 @@
   "name": "rancher-upgrade-prep",
   "version": "0.0.1",
   "description": "given a docker-compose.yml that describes a current rancher environment, produces a modified version to serve as an input to rancher-compose in order to upgrade a single service",
-  "main": "main.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "main": "rancher-upgrade.js",
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "download": "^4.2.0",
+    "fs-extra": "^0.24.0",
     "js-yaml": "^3.4.2",
+    "npm-run": "^2.0.0",
     "write-yaml": "^0.2.1"
   }
 }

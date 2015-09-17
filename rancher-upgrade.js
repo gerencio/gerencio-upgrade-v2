@@ -2,10 +2,14 @@ util        = require('util');
 yaml        = require('js-yaml');
 writeYaml   = require('write-yaml');
 fs          = require('fs');
+fse         = require('fs-extra');
+download    = require('download');
+npmRun      = require('npm-run');
 
-var sourceComposeFile   = process.argv[2];  // the full path of the docker-compose.yml file that describes the current rancher stack
-var serviceName         = process.argv[3];  // the name of the service to upgrade
-var newServiceImage     = process.argv[4];  // the image of the new service, ex: ezephoenix/webspike:34
+//var sourceComposeFile   = process.argv[2];  // the full path of the docker-compose.yml file that describes the current rancher stack
+var sourceComposeFile   = "docker-compose.yml";
+var serviceName         = process.argv[2];  // the name of the service to upgrade
+var newServiceImage     = process.argv[3];  // the image of the new service, ex: ezephoenix/webspike:34
 
 filter_keys = function(obj, filter) {
   var key, keys = [];
@@ -63,7 +67,7 @@ try {
   console.log("inserting new YAML element with name: %s", newServiceName );
   yamlDoc[newServiceName] = newServiceElement;
   
-  var targetFile = "./docker-compose-new.yml";
+  var targetFile = "./docker-compose.yml";
   console.log("writing modified YAML file out to %s", targetFile);
   writeYaml.sync(targetFile, yamlDoc);
   console.log("successfully wrote modified YAML file out to %s", targetFile);
@@ -77,10 +81,24 @@ try {
     currentServiceEntry,
     newServiceName );
 
-  console.log("now, just run:");
-  var cmd = "rancher-compose " + args;
-  console.log(cmd);
-  return cmd;
+  var source = "https://releases.rancher.com/compose/beta/latest/rancher-compose-linux-amd64.tar.gz"
+  new download({extract: true})
+    .get(source)
+    .dest(".")
+    .run(function(){
+      console.log("rancher-compose downloaded");
+      var source = "./rancher-compose-v0.3.0/rancher-compose ";
+
+      var cmd = "rancher-compose " + args;
+      console.log(cmd);
+
+      //windows:
+      //npmRun.sync("c:/tools/rancher-compose.exe " + args, {cwd: __dirname});
+
+      //linux
+      npmRun.sync(source + args, {cwd: __dirname});
+      console.log("DONE");
+    });
 } catch (e) {
     console.log("Deployment failed:")
     console.error(e);
