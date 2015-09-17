@@ -5,6 +5,9 @@ fs          = require('fs');
 fse         = require('fs-extra');
 download    = require('download');
 npmRun      = require('npm-run');
+sh          = require('shelljs/global');
+
+var isWin = /^win/.test(process.platform);
 
 var sourceComposeFile   = process.argv[2];  // the full path of the docker-compose.yml file that describes the current rancher stack
 var serviceName         = process.argv[3];  // the name of the service to upgrade
@@ -62,6 +65,7 @@ try {
 
   //name the new service: 
   var newServiceName = util.format( "%s-%s", serviceName, newServiceImage.split(':').pop() );
+  newServiceName = newServiceName.replace(".","-");
 
   console.log("inserting new YAML element with name: %s", newServiceName );
   yamlDoc[newServiceName] = newServiceElement;
@@ -91,11 +95,14 @@ try {
       var cmd = "rancher-compose " + args;
       console.log(cmd);
 
-      //windows:
-      //npmRun.sync("c:/tools/rancher-compose.exe " + args, {cwd: __dirname});
-
-      //linux
-      npmRun.sync(source + args, {cwd: __dirname});
+      if(isWin){
+        exec("c:/tools/rancher-compose.exe " + args);
+      }
+      else {
+        //linux
+        exec(source + args);
+      }
+      
       console.log("DONE");
     });
 } catch (e) {
