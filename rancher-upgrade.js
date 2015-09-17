@@ -6,10 +6,9 @@ fse         = require('fs-extra');
 download    = require('download');
 npmRun      = require('npm-run');
 
-//var sourceComposeFile   = process.argv[2];  // the full path of the docker-compose.yml file that describes the current rancher stack
-var sourceComposeFile   = "docker-compose.yml";
-var serviceName         = process.argv[2];  // the name of the service to upgrade
-var newServiceImage     = process.argv[3];  // the image of the new service, ex: ezephoenix/webspike:34
+var sourceComposeFile   = process.argv[2];  // the full path of the docker-compose.yml file that describes the current rancher stack
+var serviceName         = process.argv[3];  // the name of the service to upgrade
+var newServiceImage     = process.argv[4];  // the image of the new service, ex: ezephoenix/webspike:34
 
 filter_keys = function(obj, filter) {
   var key, keys = [];
@@ -67,7 +66,7 @@ try {
   console.log("inserting new YAML element with name: %s", newServiceName );
   yamlDoc[newServiceName] = newServiceElement;
   
-  var targetFile = "./docker-compose.yml";
+  var targetFile = sourceComposeFile;
   console.log("writing modified YAML file out to %s", targetFile);
   writeYaml.sync(targetFile, yamlDoc);
   console.log("successfully wrote modified YAML file out to %s", targetFile);
