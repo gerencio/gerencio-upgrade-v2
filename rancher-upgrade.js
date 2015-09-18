@@ -95,18 +95,20 @@ try {
       var cmd = "rancher-compose " + args;
       console.log(cmd);
 
+      var exitCode = 0;
       if(isWin){
-        exec("c:/tools/rancher-compose.exe " + args);
+        exitCode = exec("c:/tools/rancher-compose.exe " + args);
       }
       else {
         //linux
-        exec(source + args);
+        exitCode = exec(source + args);
       }
       
       console.log("DONE");
+      process.exit(exitCode);
     });
 } catch (e) {
     console.log("Deployment failed:")
     console.error(e);
-    return 1;
+    process.exit(1);
 }
