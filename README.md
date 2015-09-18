@@ -4,7 +4,7 @@ This script wraps the operation "rancher-compose upgrade", intended to be used f
 Inside your CircleCI project settings, set the following environment variables:
 
 ```
-RANCHER_URL         	- the url of the rancher server, ex: http://myrancher.com:8080 
+RANCHER_URL         	- the url of the rancher server, ex: http://myrancher.com:8080/v1/projects/abc
 RANCHER_ACCESS_KEY  	- your rancher API access key
 RANCHER_SECRET_KEY  	- your rancher API secret key 
 RANCHER_STACK       	- the name of your rancher stack, ex: "default", "web"
