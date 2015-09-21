@@ -6,11 +6,14 @@
   "author": "Robert Zhu",
   "license": "ISC",
   "dependencies": {
+    "delete": "^0.2.1",
     "download": "^4.2.0",
     "fs-extra": "^0.24.0",
     "js-yaml": "^3.4.2",
     "npm-run": "^2.0.0",
+    "request": "^2.63.0",
     "shelljs": "^0.5.3",
+    "unzip": "^0.1.11",
     "write-yaml": "^0.2.1"
   }
 }
