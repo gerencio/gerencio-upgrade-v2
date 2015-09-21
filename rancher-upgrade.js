@@ -180,7 +180,10 @@ try {
   console.log("downloading rancher compose config...");
   console.log(url);
 
-  var r = request.get(url).auth(username, password, true).pipe(unzip.Extract({path: '.'})).on('close',deployUpgrade);
+  var r = request.get(url).auth(username, password, true).pipe(unzip.Extract({path: '.'})).on('close',deployUpgrade)
+  .on('error', function(err){
+    console.error(err);
+  });
 } catch (e) {
     console.log("Initialization failed:")
     console.error(e);
