@@ -15,9 +15,5 @@ Edit your project's circle.yml file and add the following lines at the end of yo
 ```
 - git clone https://github.com/robzhu/rancher-upgrade 
 - cd rancher-upgrade && npm install
-- curl -O -u $RANCHER_ACCESS_KEY:$RANCHER_SECRET_KEY RANCHER_COMPOSE_URL
-- unzip composeconfig
 - node ./prep/rancher-upgrade.js ./docker-compose.yml $RANCHER_SERVICE_NAME <new docker imageID> 
 ```
-
-note: at this point, it's a good idea to commit the new YAML file somewhere.
