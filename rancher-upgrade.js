@@ -113,9 +113,9 @@ var deployUpgrade = function(){
       .run(function(){
         console.log("rancher-compose downloaded");
 
-        var cmd = "./rancher-compose-v0.3.0/rancher-compose ";
+        var cmd = "./rancher-compose-v0.4.0/rancher-compose ";
         if(isWin){
-          fse.copySync("rancher-compose-v0.3.0/rancher-compose.exe", "rancher-compose.exe" , null, null);
+          fse.copySync("rancher-compose-v0.4.0/rancher-compose.exe", "rancher-compose.exe" , null, null);
           cmd = "rancher-compose.exe ";
         }
 
