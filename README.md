@@ -13,9 +13,8 @@ RANCHER_COMPOSE_URL		- the url where the compose configuration lives, ex: http:/
 Edit your project's circle.yml file and add the following lines at the end of your deployment phase:
 
 ```
-- git clone https://github.com/robzhu/rancher-upgrade-prep prep
-- cd prep && npm install
-# - wget -O docker-compose.yml <URL of your docker-compose file from rancher>
+- git clone https://github.com/robzhu/rancher-upgrade 
+- cd rancher-upgrade && npm install
 - curl -O -u $RANCHER_ACCESS_KEY:$RANCHER_SECRET_KEY RANCHER_COMPOSE_URL
 - unzip composeconfig
 - node ./prep/rancher-upgrade.js ./docker-compose.yml $RANCHER_SERVICE_NAME <new docker imageID> 

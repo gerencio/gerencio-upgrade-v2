@@ -1,16 +1,19 @@
 {
-  "name": "rancher-upgrade-prep",
+  "name": "rancher-upgrade",
   "version": "0.0.1",
-  "description": "given a docker-compose.yml that describes a current rancher environment, produces a modified version to serve as an input to rancher-compose in order to upgrade a single service",
+  "description": "ugrades a single service in rancher",
   "main": "rancher-upgrade.js",
-  "author": "",
+  "author": "Robert Zhu",
   "license": "ISC",
   "dependencies": {
+    "delete": "^0.2.1",
     "download": "^4.2.0",
     "fs-extra": "^0.24.0",
     "js-yaml": "^3.4.2",
     "npm-run": "^2.0.0",
+    "request": "^2.63.0",
     "shelljs": "^0.5.3",
+    "unzip": "^0.1.11",
     "write-yaml": "^0.2.1"
   }
 }
