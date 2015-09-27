@@ -187,7 +187,6 @@ try {
   .pipe(unzip.Extract({path: '.'}))
   .on('close',deployUpgrade)
   .on('error', function(err){
-    console.log("OH SHIT:");
     console.error(err);
   });
 } catch (e) {
