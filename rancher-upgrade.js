@@ -6,13 +6,13 @@ fse         = require('fs-extra');
 download    = require('download');
 npmRun      = require('npm-run');
 request     = require('request');
-unzip       = require('unzip');
+unzip       = require('unzip2');
 del         = require('delete');
 sh          = require('shelljs/global');
 
 var RANCHER_COMPOSE_LINUX   = "https://releases.rancher.com/compose/beta/latest/rancher-compose-linux-amd64.tar.gz";
 var RANCHER_COMPOSE_WINDOWS = "https://releases.rancher.com/compose/beta/latest/rancher-compose-windows-386.zip";
-var RANCHER_COMPOSE_OSX     = "https://releases.rancher.com/compose/beta/latest/rancher-compose-darwin-amd64.tar.gz"
+var RANCHER_COMPOSE_OSX     = "https://releases.rancher.com/compose/beta/latest/rancher-compose-darwin-amd64.tar.gz";
 
 var isWin = /^win/.test(process.platform);
 
@@ -23,9 +23,9 @@ function run_cmd(cmd, args, cb, end) {
     var spawn = require('child_process').spawn,
         child = spawn(cmd, args),
         me = this;
-    child.stdout.on('data', function (buffer) { cb(me, buffer) });
+    child.stdout.on('data', function (buffer) { cb(me, buffer); });
     child.stdout.on('end', end);
-}
+};
 
 var filter_keys = function(obj, filter) {
   var key, keys = [];
@@ -35,7 +35,7 @@ var filter_keys = function(obj, filter) {
     }
   }
   return keys;
-}
+};
 
 var deployUpgrade = function(){
   console.log('DEPLOYMENT STARTING');
@@ -50,7 +50,7 @@ var deployUpgrade = function(){
     var matches = filter_keys(yamlDoc, expression);
 
     var currentServiceEntry = null;
-    if( matches.length == 0 ){
+    if( matches.length === 0 ){
       throw util.format("could not find any services matching name: %s", serviceName);
     }
     else if( matches.length == 1){
@@ -68,7 +68,7 @@ var deployUpgrade = function(){
           }
       });
     }
-    if(currentServiceEntry == null) {
+    if(currentServiceEntry === null) {
       throw "could not find a matching service entry, giving up";
     }
 
@@ -83,7 +83,10 @@ var deployUpgrade = function(){
 
     //name the new service: 
     var newServiceName = util.format( "%s-%s", serviceName, newServiceImage.split(':').pop() );
-    newServiceName = newServiceName.replace(".","-");
+
+    //newServiceName = newServiceName.replace(".","-");
+    //replace all instance of '.' with '-' because rancher forbids the '.' in the service name
+    newServiceName = newServiceName.split(".").join("-");
 
     console.log("inserting new YAML element with name: %s", newServiceName );
     yamlDoc[newServiceName] = newServiceElement;
@@ -140,11 +143,11 @@ var deployUpgrade = function(){
         // process.exit(exitCode);
       });
     } catch (e) {
-      console.log("Deployment failed:")
+      console.log("Deployment failed:");
       console.error(e);
     process.exit(1);
   }
-}
+};
 
 try {
 
@@ -180,12 +183,15 @@ try {
   console.log("downloading rancher compose config...");
   console.log(url);
 
-  var r = request.get(url).auth(username, password, true).pipe(unzip.Extract({path: '.'})).on('close',deployUpgrade)
+  var r = request.get(url).auth(username, password, true)
+  .pipe(unzip.Extract({path: '.'}))
+  .on('close',deployUpgrade)
   .on('error', function(err){
+    console.log("OH SHIT:");
     console.error(err);
   });
 } catch (e) {
-    console.log("Initialization failed:")
+    console.log("Initialization failed:");
     console.error(e);
     process.exit(1);
 }
