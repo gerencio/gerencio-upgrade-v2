@@ -15,17 +15,10 @@ var RANCHER_COMPOSE_WINDOWS = "https://releases.rancher.com/compose/beta/latest/
 var RANCHER_COMPOSE_OSX     = "https://releases.rancher.com/compose/beta/latest/rancher-compose-darwin-amd64.tar.gz";
 
 var isWin = /^win/.test(process.platform);
+var isOSX = /^darwin/.test(process.platform);
 
 var serviceName         = process.argv[2];  // the name of the service to upgrade
 var newServiceImage     = process.argv[3];  // the image of the new service, ex: robzhu/nodecolor:54
-
-function run_cmd(cmd, args, cb, end) {
-    var spawn = require('child_process').spawn,
-        child = spawn(cmd, args),
-        me = this;
-    child.stdout.on('data', function (buffer) { cb(me, buffer); });
-    child.stdout.on('end', end);
-};
 
 var filter_keys = function(obj, filter) {
   var key, keys = [];
@@ -109,17 +102,22 @@ var deployUpgrade = function(){
       currentServiceEntry,
       newServiceName );
 
-    var source = isWin ? RANCHER_COMPOSE_WINDOWS : RANCHER_COMPOSE_LINUX;
+    var source = isWin ? RANCHER_COMPOSE_WINDOWS : RANCHER_COMPOSE_OSX;
     new download({extract: true})
       .get(source)
       .dest(".")
       .run(function(){
         console.log("rancher-compose downloaded");
 
-        var cmd = "./rancher-compose-v0.4.0/rancher-compose ";
+        var cmd = null;
         if(isWin){
           fse.copySync("rancher-compose-v0.4.0/rancher-compose.exe", "rancher-compose.exe" , null, null);
           cmd = "rancher-compose.exe ";
+        } else if(isOSX){
+          //TODO: implement
+        } else {
+          console.log("Only Windows and OSX are currently supported");
+          process.exit(1);
         }
 
         console.log("running:\n" + cmd + args);
@@ -130,21 +128,10 @@ var deployUpgrade = function(){
             console.log(error);
           }
         });
-        // var upgrade = run_cmd(cmd, args, 
-        //     function (me, buffer) { me.stdout += buffer.toString() }, 
-        //     function() { console.log(upgrade.stdout) }
-        //   );
-        
-        // if(exitCode){
-        //   console.log("rancher-compose exited with error code: %s", exitCode);
-        // }else {
-        //   console.log("DONE");
-        // }
-        // process.exit(exitCode);
       });
     } catch (e) {
-      console.log("Deployment failed:");
-      console.error(e);
+    console.log("Deployment failed:");
+    console.error(e);
     process.exit(1);
   }
 };
@@ -173,9 +160,6 @@ try {
   var stack     = process.env.RANCHER_STACK;
   if(!stack) 
     throw new Error('required env variable: RANCHER_STACK- the name of your rancher stack, ex: "default", "web"');
-  // var name      = process.env.RANCHER_SERVICE_NAME;
-  // if(!name) 
-  //   throw new Error('required env variable: RANCHER_SERVICE_NAME- the name of the service to upgrade, such as "nodecolor"');
 
   fse.removeSync("docker-compose.yml");
   fse.removeSync("rancher-compose.yml");
