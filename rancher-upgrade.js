@@ -114,7 +114,7 @@ var deployUpgrade = function(){
           fse.copySync("rancher-compose-v0.4.0/rancher-compose.exe", "rancher-compose.exe" , null, null);
           cmd = "rancher-compose.exe ";
         } else if(isOSX){
-          //TODO: implement
+          cmd = "rancher-compose-v0.4.0/rancher-compose ";
         } else {
           console.log("Only Windows and OSX are currently supported");
           process.exit(1);
