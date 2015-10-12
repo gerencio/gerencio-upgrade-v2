@@ -102,7 +102,14 @@ var deployUpgrade = function(){
       currentServiceEntry,
       newServiceName );
 
-    var source = isWin ? RANCHER_COMPOSE_WINDOWS : RANCHER_COMPOSE_OSX;
+    var source = RANCHER_COMPOSE_LINUX;
+    if(isWin) {
+      source = RANCHER_COMPOSE_WINDOWS;
+    }
+    if(isOSX) {
+      source = RANCHER_COMPOSE_OSX;
+    }
+    
     new download({extract: true})
       .get(source)
       .dest(".")
@@ -111,13 +118,15 @@ var deployUpgrade = function(){
 
         var cmd = null;
         if(isWin){
+          console.log("Detected environment: Windows");
           fse.copySync("rancher-compose-v0.4.0/rancher-compose.exe", "rancher-compose.exe" , null, null);
           cmd = "rancher-compose.exe ";
         } else if(isOSX){
+          console.log("Detected environment: OSX");
           cmd = "rancher-compose-v0.4.0/rancher-compose ";
         } else {
-          console.log("Only Windows and OSX are currently supported");
-          process.exit(1);
+          console.log("Detected environment: Linux");
+          cmd = "./rancher-compose-v0.4.0/rancher-compose ";
         }
 
         console.log("running:\n" + cmd + args);
