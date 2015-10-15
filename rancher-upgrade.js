@@ -14,6 +14,10 @@ var RANCHER_COMPOSE_LINUX   = "https://releases.rancher.com/compose/beta/latest/
 var RANCHER_COMPOSE_WINDOWS = "https://releases.rancher.com/compose/beta/latest/rancher-compose-windows-386.zip";
 var RANCHER_COMPOSE_OSX     = "https://releases.rancher.com/compose/beta/latest/rancher-compose-darwin-amd64.tar.gz";
 
+// the rancher-compose archives above contain an intermediate folder that varies by version
+// this should be periodically updated as rancher releases new versions
+var RANCHER_COMPOSE_DIR_NAME = "rancher-compose-v0.4.1";
+
 var isWin = /^win/.test(process.platform);
 var isOSX = /^darwin/.test(process.platform);
 
@@ -74,7 +78,7 @@ var deployUpgrade = function(){
     var newServiceElement = (JSON.parse(JSON.stringify(currentServiceElement)));
     newServiceElement.image = newServiceImage;
 
-    //name the new service: 
+    //name the new service:
     var newServiceName = util.format( "%s-%s", serviceName, newServiceImage.split(':').pop() );
 
     //newServiceName = newServiceName.replace(".","-");
@@ -83,7 +87,7 @@ var deployUpgrade = function(){
 
     console.log("inserting new YAML element with name: %s", newServiceName );
     yamlDoc[newServiceName] = newServiceElement;
-    
+
     var targetFile = sourceComposeFile;
     console.log("writing modified YAML file out to %s", targetFile);
     writeYaml.sync(targetFile, yamlDoc);
@@ -92,13 +96,13 @@ var deployUpgrade = function(){
     if( newServiceName === currentServiceEntry ){
       throw new Error("the service current version and target version are the same, aborting.");
     }
-    
-    var args = util.format("--url %s --access-key %s --secret-key %s -p %s --file %s upgrade %s %s", 
-      process.env.RANCHER_URL, 
-      process.env.RANCHER_ACCESS_KEY, 
-      process.env.RANCHER_SECRET_KEY, 
+
+    var args = util.format("--url %s --access-key %s --secret-key %s -p %s --file %s upgrade %s %s",
+      process.env.RANCHER_URL,
+      process.env.RANCHER_ACCESS_KEY,
+      process.env.RANCHER_SECRET_KEY,
       process.env.RANCHER_STACK,
-      targetFile, 
+      targetFile,
       currentServiceEntry,
       newServiceName );
 
@@ -109,7 +113,7 @@ var deployUpgrade = function(){
     if(isOSX) {
       source = RANCHER_COMPOSE_OSX;
     }
-    
+
     new download({extract: true})
       .get(source)
       .dest(".")
@@ -119,14 +123,13 @@ var deployUpgrade = function(){
         var cmd = null;
         if(isWin){
           console.log("Detected environment: Windows");
-          fse.copySync("rancher-compose-v0.4.0/rancher-compose.exe", "rancher-compose.exe" , null, null);
-          cmd = "rancher-compose.exe ";
+          cmd = RANCHER_COMPOSE_DIR_NAME + "/rancher-compose.exe ";
         } else if(isOSX){
           console.log("Detected environment: OSX");
-          cmd = "rancher-compose-v0.4.0/rancher-compose ";
+          cmd = RANCHER_COMPOSE_DIR_NAME + "/rancher-compose ";
         } else {
           console.log("Detected environment: Linux");
-          cmd = "./rancher-compose-v0.4.0/rancher-compose ";
+          cmd = RANCHER_COMPOSE_DIR_NAME + "/rancher-compose ";
         }
 
         console.log("running:\n" + cmd + args);
@@ -149,25 +152,25 @@ try {
 
   // RANCHER_URL           - the url of the rancher server, ex: http://myrancher.com:8080/v1/projects/abc
   // RANCHER_ACCESS_KEY    - your rancher API access key
-  // RANCHER_SECRET_KEY    - your rancher API secret key 
+  // RANCHER_SECRET_KEY    - your rancher API secret key
   // RANCHER_STACK         - the name of your rancher stack, ex: "default", "web"
   // RANCHER_SERVICE_NAME  - the name of the service to upgrade, such as "nodecolor"
   // RANCHER_COMPOSE_URL   - the url where the compose configuration lives
 
   var server    = process.env.RANCHER_URL;
-  if(!server) 
+  if(!server)
     throw new Error('required env variable: RANCHER_URL- the url of the rancher server, ex: http://myrancher.com:8080/v1/projects/abc');
   var url       = process.env.RANCHER_COMPOSE_URL;
-  if(!url) 
+  if(!url)
     throw new Error('required env variable: RANCHER_COMPOSE_URL- the url where the compose configuration lives');
   var username  = process.env.RANCHER_ACCESS_KEY;
-  if(!username) 
-    throw new Error('required env variable: RANCHER_ACCESS_KEY- your rancher API access key');  
+  if(!username)
+    throw new Error('required env variable: RANCHER_ACCESS_KEY- your rancher API access key');
   var password  = process.env.RANCHER_SECRET_KEY;
-  if(!password) 
+  if(!password)
     throw new Error('required env variable: RANCHER_SECRET_KEY- your rancher API secret key');
   var stack     = process.env.RANCHER_STACK;
-  if(!stack) 
+  if(!stack)
     throw new Error('required env variable: RANCHER_STACK- the name of your rancher stack, ex: "default", "web"');
 
   fse.removeSync("docker-compose.yml");
