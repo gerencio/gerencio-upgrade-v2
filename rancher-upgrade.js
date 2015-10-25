@@ -125,9 +125,8 @@ var deployUpgrade = function(){
         var cmd = null;
         if(isWin){
           console.log("Detected environment: Windows");
-
+          console.log("copying rancher-compose.exe to working directory...")
           var composeFilePath = path.join("./", RANCHER_COMPOSE_DIR_NAME, "rancher-compose.exe");
-          console.log(composeFilePath);
           fss.copy( composeFilePath, "./rancher-compose.exe");
 
           cmd = "rancher-compose.exe ";
