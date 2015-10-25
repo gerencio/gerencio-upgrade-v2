@@ -3,12 +3,14 @@ yaml        = require('js-yaml');
 writeYaml   = require('write-yaml');
 fs          = require('fs');
 fse         = require('fs-extra');
+fss         = require('fs-sync');
 download    = require('download');
 npmRun      = require('npm-run');
 request     = require('request');
 unzip       = require('unzip2');
 del         = require('delete');
 sh          = require('shelljs/global');
+path        = require('path');
 
 var RANCHER_COMPOSE_LINUX   = "https://releases.rancher.com/compose/beta/latest/rancher-compose-linux-amd64.tar.gz";
 var RANCHER_COMPOSE_WINDOWS = "https://releases.rancher.com/compose/beta/latest/rancher-compose-windows-386.zip";
@@ -123,7 +125,12 @@ var deployUpgrade = function(){
         var cmd = null;
         if(isWin){
           console.log("Detected environment: Windows");
-          cmd = RANCHER_COMPOSE_DIR_NAME + "/rancher-compose.exe ";
+
+          var composeFilePath = path.join("./", RANCHER_COMPOSE_DIR_NAME, "rancher-compose.exe");
+          console.log(composeFilePath);
+          fss.copy( composeFilePath, "./rancher-compose.exe");
+
+          cmd = "rancher-compose.exe ";
         } else if(isOSX){
           console.log("Detected environment: OSX");
           cmd = RANCHER_COMPOSE_DIR_NAME + "/rancher-compose ";
