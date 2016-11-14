@@ -17,8 +17,7 @@ var RANCHER_COMPOSE_OSX = 'https://releases.rancher.com/compose/beta/latest/ranc
 
 // the rancher-compose archives above contain an intermediate folder that varies by version
 // this should be periodically updated as rancher releases new versions
-var RANCHER_COMPOSE_DIR_NAME = 'rancher-compose-v0.4.3'
-
+var RANCHER_COMPOSE_DIR_NAME = 'rancher-compose-v0.8.6'
 var isWin = /^win/.test(process.platform)
 var isOSX = /^darwin/.test(process.platform)
 
@@ -100,10 +99,10 @@ var deployUpgrade = function () {
     }
 
     var args = util.format('--url %s --access-key %s --secret-key %s -p %s --file %s upgrade %s %s',
-      process.env.RANCHER_URL,
-      process.env.RANCHER_ACCESS_KEY,
-      process.env.RANCHER_SECRET_KEY,
-      process.env.RANCHER_STACK,
+      process.env.GERENCIO_URL,
+      process.env.GERENCIO_ACCESS_KEY,
+      process.env.GERENCIO_SECRET_KEY,
+      process.env.GERENCIO_STACK,
       targetFile,
       currentServiceEntry,
       newServiceName)
@@ -162,25 +161,25 @@ try {
   // RANCHER_SERVICE_NAME  - the name of the service to upgrade, such as "nodecolor"
   // RANCHER_COMPOSE_URL   - the url where the compose configuration lives
 
-  var server = process.env.RANCHER_URL
+  var server = process.env.GERENCIO_URL
   if (!server) {
-    throw new Error('required env variable: RANCHER_URL- the url of the rancher server, ex: http://myrancher.com:8080/v1/projects/abc')
+    throw new Error('required env variable: GERENCIO_URL- the url of the gerenc.io server, ex: http://cloud.gerenc.io.com/v1/projects/abc')
   }
-  var url = process.env.RANCHER_COMPOSE_URL
+  var url = process.env.GERENCIO_COMPOSE_URL
   if (!url) {
-    throw new Error('required env variable: RANCHER_COMPOSE_URL- the url where the compose configuration lives')
+    throw new Error('required env variable: GERENCIO_COMPOSE_URL- the url where the compose configuration lives')
   }
-  var username = process.env.RANCHER_ACCESS_KEY
+  var username = process.env.GERENCIO_ACCESS_KEY
   if (!username) {
-    throw new Error('required env variable: RANCHER_ACCESS_KEY- your rancher API access key')
+    throw new Error('required env variable: GERENCIO_ACCESS_KEY- your gerenc.io API access key')
   }
-  var password = process.env.RANCHER_SECRET_KEY
+  var password = process.env.GERENCIO_SECRET_KEY
   if (!password) {
-    throw new Error('required env variable: RANCHER_SECRET_KEY- your rancher API secret key')
+    throw new Error('required env variable: GERENCIO_SECRET_KEY- your gerenc.io API secret key')
   }
-  var stack = process.env.RANCHER_STACK
+  var stack = process.env.GERENCIO_STACK
   if (!stack) {
-    throw new Error('required env variable: RANCHER_STACK- the name of your rancher stack, ex: "default", "web"')
+    throw new Error('required env variable: GERENCIO_STACK- the name of your rancher stack, ex: "default", "web"')
   }
 
   fse.removeSync('docker-compose.yml')
