@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 var util = require('util')
 var yaml = require('js-yaml')
 var writeYaml = require('write-yaml')
@@ -5,11 +7,8 @@ var fs = require('fs')
 var fse = require('fs-extra')
 var fss = require('fs-sync')
 var Download = require('download')
-var npmRun = require('npm-run')
 var request = require('request')
 var unzip = require('unzip2')
-var del = require('delete')
-var sh = require('shelljs/global')
 var path = require('path')
 
 var RANCHER_COMPOSE_LINUX = 'https://releases.rancher.com/compose/beta/latest/rancher-compose-linux-amd64.tar.gz'
@@ -60,16 +59,16 @@ var deployUpgrade = function () {
 
         var maxVersion = 0
         matches.forEach(function (entry) {
-        var entryVersion = entry.split('-').pop()
-        if (entryVersion > maxVersion) {
-          maxVersion = entryVersion
-          currentServiceEntry = entry
-        }
-      })
+          var entryVersion = entry.split('-').pop()
+          if (entryVersion > maxVersion) {
+            maxVersion = entryVersion
+            currentServiceEntry = entry
+          }
+        })
       }
       if (currentServiceEntry === null) {
-      throw 'could not find a matching service entry, giving up'
-    }
+        throw Error('could not find a matching service entry, giving up')
+      }
     }
 
     console.log('Using service entry: ' + currentServiceEntry)
