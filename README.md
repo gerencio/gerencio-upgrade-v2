@@ -1,6 +1,10 @@
 # gerencio-upgrade
 This script upgrades a single service to a new container ID in a target gerenc.io environment. It does this by wrapping "rancher-compose upgrade A B" and providing all the requisite environment parameters via environment variables. 
 
+[![Build Status](https://travis-ci.org/gerencio/gerencio-upgrade-v2.svg?branch=master)](https://travis-ci.org/gerencio/gerencio-upgrade-v2)
+[![JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
+
+
 ```
 GERENCIO_URL         	- the url of the gerencio server, ex: http://myrancher.com:8080/v1/projects/abc
 GERENCIO_ACCESS_KEY  	- your gerencio API access key
