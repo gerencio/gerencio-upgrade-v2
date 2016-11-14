@@ -22,7 +22,8 @@ var isWin = /^win/.test(process.platform)
 var isOSX = /^darwin/.test(process.platform)
 
 var serviceName = process.argv[2]  // the name of the service to upgrade
-var newServiceImage = process.argv[3]  // the image of the new service, ex: robzhu/nodecolor:54
+var interval = process.argv[3]  // interval in miliseconds to change version in nodes
+var newServiceImage = process.argv[4]  // the image of the new service, ex: robzhu/nodecolor:54
 
 var filterKeys = function (obj, filter) {
   var key
@@ -98,12 +99,13 @@ var deployUpgrade = function () {
       throw new Error('the service current version and target version are the same, aborting.')
     }
 
-    var args = util.format('--url %s --access-key %s --secret-key %s -p %s --file %s upgrade %s %s',
+    var args = util.format('--url %s --access-key %s --secret-key %s -p %s --file %s up -d --batch-size 1 --interval %s --confirm-upgrade  --pull  --force-upgrade %s  %s',
       process.env.GERENCIO_URL,
       process.env.GERENCIO_ACCESS_KEY,
       process.env.GERENCIO_SECRET_KEY,
       process.env.GERENCIO_STACK,
       targetFile,
+      interval,
       currentServiceEntry,
       newServiceName)
 
