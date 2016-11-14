@@ -40,6 +40,7 @@ var deployUpgrade = function () {
   console.log('DEPLOYMENT STARTING')
   try {
     var sourceComposeFile = 'docker-compose.yml'
+    var rancherComposeFile = 'rancher-compose.yml'
 
     console.log('loading %s', sourceComposeFile)
     var yamlDoc = yaml.safeLoad(fs.readFileSync(sourceComposeFile, 'utf8'))
@@ -99,15 +100,16 @@ var deployUpgrade = function () {
       throw new Error('the service current version and target version are the same, aborting.')
     }
 
-    var args = util.format('--url %s --access-key %s --secret-key %s -p %s --file %s up -d --batch-size 1 --interval %s --confirm-upgrade  --pull  --force-upgrade %s  %s',
+    var args = util.format('--url %s --access-key %s --secret-key %s -p %s --file %s --rancher-file %s up -d --batch-size 1 --interval %s --confirm-upgrade  --pull  --force-upgrade %s',
       process.env.GERENCIO_URL,
       process.env.GERENCIO_ACCESS_KEY,
       process.env.GERENCIO_SECRET_KEY,
       process.env.GERENCIO_STACK,
       targetFile,
+      rancherComposeFile,
       interval,
-      currentServiceEntry,
-      newServiceName)
+      currentServiceEntry
+      )
 
     var source = RANCHER_COMPOSE_LINUX
     if (isWin) {
