@@ -11,7 +11,7 @@ pids
 
 # YAML files
 *.yml
-
+!.travis.yml
 #rancher files
 rancher-compose*
 
