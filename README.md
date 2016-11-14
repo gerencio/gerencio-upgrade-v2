@@ -24,5 +24,5 @@ Edit your project's circle.yml file and add the following lines at the end of yo
 
 ```
 - npm install -g gerencio-upgrade 
-- gerencio-upgrade $RANCHER_SERVICE_NAME <new docker imageID> 
+- gerencio-upgrade $GERENCIO_SERVICE_NAME <new docker imageID>  <new docker imageID tag>
 ```
