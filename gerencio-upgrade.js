@@ -134,11 +134,11 @@ var deployUpgrade = function () {
         console.log('running:\n' + cmd + args)
 
         var exec = require('child_process').exec
-        // exec(cmd + args, function (error, stdout, stderr) {
-        //   if (error) {
-        //     console.log(error)
-        //   }
-        // })
+        exec(cmd + args, function (error, stdout, stderr) {
+           if (error) {
+             console.log(error)
+           }
+        })
       })
   } catch (e) {
     console.log('Deployment failed:')
@@ -148,12 +148,12 @@ var deployUpgrade = function () {
 }
 
 try {
-  // RANCHER_URL           - the url of the rancher server, ex: http://myrancher.com:8080/v1/projects/abc
-  // RANCHER_ACCESS_KEY    - your rancher API access key
-  // RANCHER_SECRET_KEY    - your rancher API secret key
-  // RANCHER_STACK         - the name of your rancher stack, ex: "default", "web"
-  // RANCHER_SERVICE_NAME  - the name of the service to upgrade, such as "nodecolor"
-  // RANCHER_COMPOSE_URL   - the url where the compose configuration lives
+  // GERENCIO_URL           - the url of the rancher server, ex: http://myrancher.com:8080/v1/projects/abc
+  // GERENCIO_ACCESS_KEY    - your rancher API access key
+  // GERENCIO_SECRET_KEY    - your rancher API secret key
+  // GERENCIO_STACK         - the name of your rancher stack, ex: "default", "web"
+  // GERENCIO_SERVICE_NAME  - the name of the service to upgrade, such as "nodecolor"
+  // GERENCIO_COMPOSE_URL   - the url where the compose configuration lives
 
   var server = process.env.GERENCIO_URL
   if (!server) {
