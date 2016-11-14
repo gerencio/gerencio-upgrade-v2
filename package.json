@@ -24,5 +24,11 @@
   },
   "bin": {
     "gerencio-upgrade": "gerencio-upgrade.js"
+  },
+  "bugs": {
+     "url" : "https://github.com/gerencio/gerencio-upgrade-v2/issues",
+     "email" : "project@hostname.com"
+  },
+  "repository": { "type" : "git" , "url" : "https://github.com/gerencio/gerencio-upgrade-v2.git"
   }
 }
