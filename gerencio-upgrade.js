@@ -17,7 +17,7 @@ var RANCHER_COMPOSE_OSX = 'https://releases.rancher.com/compose/beta/latest/ranc
 
 // the rancher-compose archives above contain an intermediate folder that varies by version
 // this should be periodically updated as rancher releases new versions
-var RANCHER_COMPOSE_DIR_NAME = 'rancher-compose-v0.8.6'
+var RANCHER_COMPOSE_DIR_NAME = 'rancher-compose-v0.7.3'
 var isWin = /^win/.test(process.platform)
 var isOSX = /^darwin/.test(process.platform)
 
