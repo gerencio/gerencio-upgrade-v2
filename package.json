@@ -1,9 +1,9 @@
 {
-  "name": "rancher-upgrade",
+  "name": "gerencio-upgrade",
   "version": "0.0.2",
-  "description": "ugrades a single service in rancher",
-  "main": "rancher-upgrade.js",
-  "author": "Robert Zhu",
+  "description": "ugrades a single service in gerenc.io",
+  "main": "gerencio-upgrade.js",
+  "author": "Clayton Silva",
   "license": "ISC",
   "dependencies": {
     "delete": "^0.2.1",
@@ -11,10 +11,18 @@
     "fs-extra": "^0.24.0",
     "fs-sync": "^1.0.1",
     "js-yaml": "^3.4.2",
-    "npm-run": "^2.0.0",
     "request": "^2.63.0",
     "shelljs": "^0.5.3",
     "unzip2": "^0.2.5",
     "write-yaml": "^0.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^3.10.0",
+    "eslint-config-standard": "^6.2.1",
+    "eslint-plugin-promise": "^3.3.2",
+    "eslint-plugin-standard": "^2.0.1"
+  },
+  "bin": {
+    "gerencio-upgrade": "gerencio-upgrade.js"
   }
 }
