@@ -1,34 +1,37 @@
 {
   "name": "gerencio-upgrade",
-  "version": "1.0.2-rev3",
+  "version": "1.0.3",
   "description": "ugrades a single service in gerenc.io",
   "main": "gerencio-upgrade.js",
   "author": "Clayton Silva",
   "license": "ISC",
   "dependencies": {
-    "delete": "^0.2.1",
+    "delete": "^0.3.2",
     "download": "^4.2.0",
-    "fs-extra": "^0.24.0",
+    "fs-extra": "^1.0.0",
     "fs-sync": "^1.0.1",
     "js-yaml": "^3.4.2",
-    "request": "^2.63.0",
-    "shelljs": "^0.5.3",
+    "minimist": "^1.2.0",
+    "request": "^2.79.0",
+    "shelljs": "^0.7.5",
     "unzip2": "^0.2.5",
     "write-yaml": "^0.2.1"
   },
   "devDependencies": {
-    "eslint": "^3.10.0",
+    "eslint": "^3.11.1",
     "eslint-config-standard": "^6.2.1",
-    "eslint-plugin-promise": "^3.3.2",
+    "eslint-plugin-promise": "^3.4.0",
     "eslint-plugin-standard": "^2.0.1"
   },
   "bin": {
     "gerencio-upgrade": "gerencio-upgrade.js"
   },
   "bugs": {
-     "url" : "https://github.com/gerencio/gerencio-upgrade-v2/issues",
-     "email" : "project@hostname.com"
+    "url": "https://github.com/gerencio/gerencio-upgrade-v2/issues",
+    "email": "project@hostname.com"
   },
-  "repository": { "type" : "git" , "url" : "https://github.com/gerencio/gerencio-upgrade-v2.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gerencio/gerencio-upgrade-v2.git"
   }
 }
