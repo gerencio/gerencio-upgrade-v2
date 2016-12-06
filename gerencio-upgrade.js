@@ -22,10 +22,10 @@ var RANCHER_COMPOSE_DIR_NAME = 'rancher-compose-v0.7.3'
 var isWin = /^win/.test(process.platform)
 var isOSX = /^darwin/.test(process.platform)
 
-var serviceName = argv['_'][2]  // the name of the service to upgrade
-var interval = argv['_'][3]  // interval in miliseconds to change version in nodes
-var newServiceImage = argv['_'][4]  // the image of the new service, ex: robzhu/nodecolor:54
-var newServiceTag = argv['_'][5]  // the image of the new service, ex: robzhu/nodecolor:54
+var serviceName = argv['_'][0]  // the name of the service to upgrade
+var interval = argv['_'][1]  // interval in miliseconds to change version in nodes
+var newServiceImage = argv['_'][2]  // the image of the new service, ex: robzhu/nodecolor:54
+var newServiceTag = argv['_'][3]  // the image of the new service, ex: robzhu/nodecolor:54
 
 
 var filterKeys = function (obj, filter) {
