@@ -1,6 +1,6 @@
 {
   "name": "gerencio-upgrade",
-  "version": "1.0.4-rev1",
+  "version": "1.0.5",
   "description": "ugrades a single service in gerenc.io",
   "main": "gerencio-upgrade.js",
   "author": "Clayton Silva",
