@@ -26,8 +26,6 @@ var serviceName = argv['_'][0]  // the name of the service to upgrade
 var interval = argv['_'][1]  // interval in miliseconds to change version in nodes
 var newServiceImage = argv['_'][2]  // the image of the new service, ex: robzhu/nodecolor:54
 var newServiceTag = argv['_'][3]  // the image of the new service, ex: robzhu/nodecolor:54
-
-
 var filterKeys = function (obj, filter) {
   var key
   var keys = []
@@ -37,6 +35,17 @@ var filterKeys = function (obj, filter) {
     }
   }
   return keys
+}
+
+var getSource = function () {
+  var source = argv['COMPOSE_BIN_URL'] || RANCHER_COMPOSE_LINUX
+  if (isWin) {
+    source = argv['COMPOSE_BIN_URL'] || RANCHER_COMPOSE_WINDOWS
+  }
+  if (isOSX) {
+    source = argv['COMPOSE_BIN_URL'] || RANCHER_COMPOSE_OSX
+  }
+  return source
 }
 
 var deployUpgrade = function () {
@@ -89,8 +98,6 @@ var deployUpgrade = function () {
     console.log('writing modified YAML file out to %s', targetFile)
     writeYaml.sync(targetFile, yamlDoc)
     console.log('successfully wrote modified YAML file out to %s', targetFile)
-
-
     var args = util.format('--url %s --access-key %s --secret-key %s -p %s --file %s --rancher-file %s up -d --batch-size 1 --interval %s --confirm-upgrade  --pull  --force-upgrade %s',
       process.env.GERENCIO_URL || argv['GERENCIO_URL'],
       process.env.GERENCIO_ACCESS_KEY || argv['GERENCIO_ACCESS_KEY'],
@@ -102,13 +109,7 @@ var deployUpgrade = function () {
       currentServiceEntry
       )
 
-    var source = RANCHER_COMPOSE_LINUX
-    if (isWin) {
-      source = RANCHER_COMPOSE_WINDOWS
-    }
-    if (isOSX) {
-      source = RANCHER_COMPOSE_OSX
-    }
+    var source = getSource()
 
     new Download({extract: true})
       .get(source)
@@ -136,9 +137,9 @@ var deployUpgrade = function () {
 
         var exec = require('child_process').exec
         exec(cmd + args, function (error, stdout, stderr) {
-           if (error) {
-             console.log(error)
-           }
+          if (error) {
+            console.log(error)
+          }
         })
       })
   } catch (e) {
@@ -155,9 +156,6 @@ try {
   // GERENCIO_STACK         - the name of your rancher stack, ex: "default", "web"
   // GERENCIO_SERVICE_NAME  - the name of the service to upgrade, such as "nodecolor"
   // GERENCIO_COMPOSE_URL   - the url where the compose configuration lives
-
-
-  
   var server = process.env.GERENCIO_URL || argv['GERENCIO_URL']
   if (!server) {
     throw new Error('required env variable: GERENCIO_URL- the url of the gerenc.io server, ex: http://cloud.gerenc.io.com/v1/projects/abc')
