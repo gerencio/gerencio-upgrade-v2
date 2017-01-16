@@ -18,7 +18,6 @@ var RANCHER_COMPOSE_OSX = 'https://releases.rancher.com/compose/beta/latest/ranc
 
 // the rancher-compose archives above contain an intermediate folder that varies by version
 // this should be periodically updated as rancher releases new versions
-var RANCHER_COMPOSE_DIR_NAME = 'rancher-compose-v0.7.3'
 var isWin = /^win/.test(process.platform)
 var isOSX = /^darwin/.test(process.platform)
 
@@ -38,14 +37,26 @@ var filterKeys = function (obj, filter) {
 }
 
 var getSource = function () {
-  var source = argv['COMPOSE_BIN_URL'] || RANCHER_COMPOSE_LINUX
+  var urlLinux = 'https://releases.rancher.com/compose/' + argv['COMPOSE_VERSION'] + '/rancher-compose-linux-amd64-' + argv['COMPOSE_VERSION'] + '.tar.gz'
+  var urlWindows = 'https://releases.rancher.com/compose/' + argv['COMPOSE_VERSION'] + '/rancher-compose-windows-386-' + argv['COMPOSE_VERSION'] + '.zip'
+  var urlOSX = 'https://releases.rancher.com/compose/' + argv['COMPOSE_VERSION'] + '/rancher-compose-darwin-amd64-' + argv['COMPOSE_VERSION'] + '.tar.gz'
+  var source = argv['COMPOSE_VERSION'] ? urlLinux : RANCHER_COMPOSE_LINUX
   if (isWin) {
-    source = argv['COMPOSE_BIN_URL'] || RANCHER_COMPOSE_WINDOWS
+    source = argv['COMPOSE_VERSION'] ? urlWindows : RANCHER_COMPOSE_WINDOWS
   }
   if (isOSX) {
-    source = argv['COMPOSE_BIN_URL'] || RANCHER_COMPOSE_OSX
+    source = argv['COMPOSE_VERSION'] ? urlOSX : RANCHER_COMPOSE_OSX
   }
   return source
+}
+
+var getDir = function () {
+  var dir = 'rancher-compose-v0.7.3'
+  if (argv['COMPOSE_VERSION']) {
+    return 'rancher-compose-' + argv['COMPOSE_VERSION']
+  } else {
+    return dir
+  }
 }
 
 var deployUpgrade = function () {
@@ -58,41 +69,81 @@ var deployUpgrade = function () {
     var yamlDoc = yaml.safeLoad(fs.readFileSync(sourceComposeFile, 'utf8'))
     console.log('searching for service definition: %s', serviceName)
 
-    var expression = util.format('^%s*', serviceName)
-    var matches = filterKeys(yamlDoc, expression)
+    if (Object.keys(yamlDoc).filter(function (d) { return d === 'services' }).length) {
+      // Docker-compose v2
+      var expression = util.format('^%s*', serviceName)
+      var matches = filterKeys(yamlDoc['services'], expression)
 
-    var currentServiceEntry = null
-    if (matches.length === 0) {
-      throw util.format('could not find any services matching name: %s', serviceName)
-    } else {
-      if (matches.length === 1) {
-        currentServiceEntry = matches[0]
+      var currentServiceEntry = null
+      if (matches.length === 0) {
+        throw util.format('could not find any services matching name: %s', serviceName)
       } else {
-        console.log("multiple service entries found that match: '%s': %s ", serviceName, matches)
+        if (matches.length === 1) {
+          currentServiceEntry = matches[0]
+        } else {
+          console.log("multiple service entries found that match: '%s': %s ", serviceName, matches)
 
-        var maxVersion = 0
-        matches.forEach(function (entry) {
-          var entryVersion = entry.split('-').pop()
-          if (entryVersion > maxVersion) {
-            maxVersion = entryVersion
-            currentServiceEntry = entry
-          }
-        })
+          var maxVersion = 0
+          matches.forEach(function (entry) {
+            var entryVersion = entry.split('-').pop()
+            if (entryVersion > maxVersion) {
+              maxVersion = entryVersion
+              currentServiceEntry = entry
+            }
+          })
+        }
+        if (currentServiceEntry === null) {
+          throw Error('could not find a matching service entry, giving up')
+        }
       }
-      if (currentServiceEntry === null) {
-        throw Error('could not find a matching service entry, giving up')
+
+      console.log('Using service entry: ' + currentServiceEntry)
+
+      // TODO: check the docker registry to see if the image actually exists
+      var currentServiceElement = yamlDoc['services'][currentServiceEntry]
+      console.log(currentServiceElement)
+      // clone the service element
+      var newServiceElement = (JSON.parse(JSON.stringify(currentServiceElement)))
+      newServiceElement.image = newServiceImage + ':' + (newServiceTag || 'latest')
+      yamlDoc['services'][currentServiceEntry] = newServiceElement
+    } else {
+      // Old Model docker-compose
+      var v1Expression = util.format('^%s*', serviceName)
+      var v1Matches = filterKeys(yamlDoc, v1Expression)
+
+      var v1CurrentServiceEntry = null
+      if (v1Matches.length === 0) {
+        throw util.format('could not find any services matching name: %s', serviceName)
+      } else {
+        if (v1Matches.length === 1) {
+          v1CurrentServiceEntry = v1Matches[0]
+        } else {
+          console.log("multiple service entries found that match: '%s': %s ", serviceName, v1Matches)
+
+          var v1MaxVersion = 0
+          v1Matches.forEach(function (entry) {
+            var entryVersion = entry.split('-').pop()
+            if (entryVersion > v1MaxVersion) {
+              v1MaxVersion = entryVersion
+              v1CurrentServiceEntry = entry
+            }
+          })
+        }
+        if (v1CurrentServiceEntry === null) {
+          throw Error('could not find a matching service entry, giving up')
+        }
       }
+
+      console.log('Using service entry: ' + v1CurrentServiceEntry)
+
+      // TODO: check the docker registry to see if the image actually exists
+      var v1CurrentServiceElement = yamlDoc[v1CurrentServiceEntry]
+      console.log(v1CurrentServiceElement)
+      // clone the service element
+      var v1newServiceElement = (JSON.parse(JSON.stringify(currentServiceElement)))
+      v1newServiceElement.image = newServiceImage + ':' + (newServiceTag || 'latest')
+      yamlDoc[v1CurrentServiceEntry] = v1newServiceElement
     }
-
-    console.log('Using service entry: ' + currentServiceEntry)
-
-    // TODO: check the docker registry to see if the image actually exists
-    var currentServiceElement = yamlDoc[currentServiceEntry]
-    console.log(currentServiceElement)
-    // clone the service element
-    var newServiceElement = (JSON.parse(JSON.stringify(currentServiceElement)))
-    newServiceElement.image = newServiceImage + ':' + (newServiceTag || 'latest')
-    yamlDoc[currentServiceEntry] = newServiceElement
 
     var targetFile = sourceComposeFile
     console.log('writing modified YAML file out to %s', targetFile)
@@ -121,16 +172,16 @@ var deployUpgrade = function () {
         if (isWin) {
           console.log('Detected environment: Windows')
           console.log('copying rancher-compose.exe to working directory...')
-          var composeFilePath = path.join('./', RANCHER_COMPOSE_DIR_NAME, 'rancher-compose.exe')
+          var composeFilePath = path.join('./', getDir(), 'rancher-compose.exe')
           fss.copy(composeFilePath, './rancher-compose.exe')
 
           cmd = 'rancher-compose.exe '
         } else if (isOSX) {
           console.log('Detected environment: OSX')
-          cmd = RANCHER_COMPOSE_DIR_NAME + '/rancher-compose '
+          cmd = getDir() + '/rancher-compose '
         } else {
           console.log('Detected environment: Linux')
-          cmd = RANCHER_COMPOSE_DIR_NAME + '/rancher-compose '
+          cmd = getDir() + '/rancher-compose '
         }
 
         console.log('running:\n' + cmd + args)
