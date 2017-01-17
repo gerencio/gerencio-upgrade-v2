@@ -140,7 +140,7 @@ var deployUpgrade = function () {
       var v1CurrentServiceElement = yamlDoc[v1CurrentServiceEntry]
       console.log(v1CurrentServiceElement)
       // clone the service element
-      var v1newServiceElement = (JSON.parse(JSON.stringify(currentServiceElement)))
+      var v1newServiceElement = (JSON.parse(JSON.stringify(v1CurrentServiceEntry)))
       v1newServiceElement.image = newServiceImage + ':' + (newServiceTag || 'latest')
       yamlDoc[v1CurrentServiceEntry] = v1newServiceElement
     }
