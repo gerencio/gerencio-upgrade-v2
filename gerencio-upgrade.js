@@ -68,13 +68,12 @@ var deployUpgrade = function () {
     console.log('loading %s', sourceComposeFile)
     var yamlDoc = yaml.safeLoad(fs.readFileSync(sourceComposeFile, 'utf8'))
     console.log('searching for service definition: %s', serviceName)
+    var currentServiceEntry = null
 
     if (Object.keys(yamlDoc).filter(function (d) { return d === 'services' }).length) {
       // Docker-compose v2
       var expression = util.format('^%s*', serviceName)
       var matches = filterKeys(yamlDoc['services'], expression)
-
-      var currentServiceEntry = null
       if (matches.length === 0) {
         throw util.format('could not find any services matching name: %s', serviceName)
       } else {
@@ -110,13 +109,11 @@ var deployUpgrade = function () {
       // Old Model docker-compose
       var v1Expression = util.format('^%s*', serviceName)
       var v1Matches = filterKeys(yamlDoc, v1Expression)
-
-      var v1CurrentServiceEntry = null
       if (v1Matches.length === 0) {
         throw util.format('could not find any services matching name: %s', serviceName)
       } else {
         if (v1Matches.length === 1) {
-          v1CurrentServiceEntry = v1Matches[0]
+          currentServiceEntry = v1Matches[0]
         } else {
           console.log("multiple service entries found that match: '%s': %s ", serviceName, v1Matches)
 
@@ -125,24 +122,24 @@ var deployUpgrade = function () {
             var entryVersion = entry.split('-').pop()
             if (entryVersion > v1MaxVersion) {
               v1MaxVersion = entryVersion
-              v1CurrentServiceEntry = entry
+              currentServiceEntry = entry
             }
           })
         }
-        if (v1CurrentServiceEntry === null) {
+        if (currentServiceEntry === null) {
           throw Error('could not find a matching service entry, giving up')
         }
       }
 
-      console.log('Using service entry: ' + v1CurrentServiceEntry)
+      console.log('Using service entry: ' + currentServiceEntry)
 
       // TODO: check the docker registry to see if the image actually exists
-      var v1CurrentServiceElement = yamlDoc[v1CurrentServiceEntry]
+      var v1CurrentServiceElement = yamlDoc[currentServiceEntry]
       console.log(v1CurrentServiceElement)
       // clone the service element
-      var v1newServiceElement = (JSON.parse(JSON.stringify(v1CurrentServiceEntry)))
+      var v1newServiceElement = (JSON.parse(JSON.stringify(v1CurrentServiceElement)))
       v1newServiceElement.image = newServiceImage + ':' + (newServiceTag || 'latest')
-      yamlDoc[v1CurrentServiceEntry] = v1newServiceElement
+      yamlDoc[currentServiceEntry] = v1newServiceElement
     }
 
     var targetFile = sourceComposeFile
