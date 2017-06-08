@@ -51,7 +51,7 @@ var getSource = function () {
 }
 
 var getDir = function () {
-  var dir = 'rancher-compose-v0.7.3'
+  var dir = 'rancher-compose-v0.12.5'
   if (argv['COMPOSE_VERSION']) {
     return 'rancher-compose-' + argv['COMPOSE_VERSION']
   } else {
