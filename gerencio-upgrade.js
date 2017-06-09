@@ -15,6 +15,7 @@ var argv = require('minimist')(process.argv.slice(2))
 var RANCHER_COMPOSE_LINUX = 'https://releases.rancher.com/compose/beta/latest/rancher-compose-linux-amd64.tar.gz'
 var RANCHER_COMPOSE_WINDOWS = 'https://releases.rancher.com/compose/beta/latest/rancher-compose-windows-386.zip'
 var RANCHER_COMPOSE_OSX = 'https://releases.rancher.com/compose/beta/latest/rancher-compose-darwin-amd64.tar.gz'
+var RANCHER_COMPOSE_VERSION = RANCHER_COMPOSE_VERSION || 'v0.12.5'
 
 // the rancher-compose archives above contain an intermediate folder that varies by version
 // this should be periodically updated as rancher releases new versions
@@ -37,23 +38,23 @@ var filterKeys = function (obj, filter) {
 }
 
 var getSource = function () {
-  var urlLinux = 'https://releases.rancher.com/compose/' + argv['COMPOSE_VERSION'] + '/rancher-compose-linux-amd64-' + argv['COMPOSE_VERSION'] + '.tar.gz'
-  var urlWindows = 'https://releases.rancher.com/compose/' + argv['COMPOSE_VERSION'] + '/rancher-compose-windows-386-' + argv['COMPOSE_VERSION'] + '.zip'
-  var urlOSX = 'https://releases.rancher.com/compose/' + argv['COMPOSE_VERSION'] + '/rancher-compose-darwin-amd64-' + argv['COMPOSE_VERSION'] + '.tar.gz'
-  var source = argv['COMPOSE_VERSION'] ? urlLinux : RANCHER_COMPOSE_LINUX
+  var urlLinux = 'https://releases.rancher.com/compose/' + RANCHER_COMPOSE_VERSION + '/rancher-compose-linux-amd64-' + RANCHER_COMPOSE_VERSION + '.tar.gz'
+  var urlWindows = 'https://releases.rancher.com/compose/' + RANCHER_COMPOSE_VERSION + '/rancher-compose-windows-386-' + RANCHER_COMPOSE_VERSION + '.zip'
+  var urlOSX = 'https://releases.rancher.com/compose/' + RANCHER_COMPOSE_VERSION + '/rancher-compose-darwin-amd64-' + RANCHER_COMPOSE_VERSION + '.tar.gz'
+  var source = RANCHER_COMPOSE_VERSION ? urlLinux : RANCHER_COMPOSE_LINUX
   if (isWin) {
-    source = argv['COMPOSE_VERSION'] ? urlWindows : RANCHER_COMPOSE_WINDOWS
+    source = RANCHER_COMPOSE_VERSION ? urlWindows : RANCHER_COMPOSE_WINDOWS
   }
   if (isOSX) {
-    source = argv['COMPOSE_VERSION'] ? urlOSX : RANCHER_COMPOSE_OSX
+    source = RANCHER_COMPOSE_VERSION ? urlOSX : RANCHER_COMPOSE_OSX
   }
   return source
 }
 
 var getDir = function () {
   var dir = 'rancher-compose-v0.12.5'
-  if (argv['COMPOSE_VERSION']) {
-    return 'rancher-compose-' + argv['COMPOSE_VERSION']
+  if (RANCHER_COMPOSE_VERSION) {
+    return 'rancher-compose-' + RANCHER_COMPOSE_VERSION
   } else {
     return dir
   }
